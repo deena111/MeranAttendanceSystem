@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "281475576591",
+    "firebase_url": "https://meran-attendance-system.firebaseio.com",
+    "project_id": "meran-attendance-system",
+    "storage_bucket": "meran-attendance-system.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:281475576591:android:16f6991f831a93cf",
+        "android_client_info": {
+          "package_name": "com.example.meranattendancesystem"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "281475576591-hv12kcdhf1rf4qk2m6d9lkllj007alul.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.meranattendancesystem",
+            "certificate_hash": "e46a77180a348a78360aa5226dfcc72b5aed2d17"
+          }
+        },
+        {
+          "client_id": "281475576591-0hh5h7v2tmq2lkdub47big5b16bdgfqq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBIyMya57Q-lDAy5mht0i2QGFqa9elpA0c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "281475576591-0hh5h7v2tmq2lkdub47big5b16bdgfqq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
