@@ -76,8 +76,8 @@ public class Login extends Fragment {
             return;
         }
 
-        pd.setMessage("LOGIN");
-        pd.show();
+        //pd.setMessage("LOGIN");
+       // pd.show();
 
         auth.signInWithEmailAndPassword(Email,Pass)
                 .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
@@ -86,11 +86,11 @@ public class Login extends Fragment {
                         pd.dismiss();
                         if(task.isSuccessful()){
                             Toast.makeText(getActivity().getApplicationContext(), "ok",Toast.LENGTH_LONG).show();
-                            /*getSupportFragmentManager()
+                            getActivity().getSupportFragmentManager()
                                 .beginTransaction()
-                                .replace(R.id.m_container, new **Login()**)
-                                .addToBackStack(null)
-                                .commit();*/
+                                .replace(R.id.m_container, new ScanQR())
+                            .addToBackStack(null)
+                                .commit();
                         }
                         else
                         {
