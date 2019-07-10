@@ -40,11 +40,11 @@ public class MainActivity extends AppCompatActivity {
 
         currentuser = FirebaseAuth.getInstance();
         if (currentuser.getCurrentUser() != null) {
-            /*getSupportFragmentManager()
+            getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.m_container, new **Login()**)
+                    .replace(R.id.m_container, new ScanQR())
                     .addToBackStack(null)
-                    .commit();*/
+                    .commit();
         }
         setContentView(R.layout.activity_main);
 
