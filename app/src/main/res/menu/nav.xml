@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/n_scan"
+        android:icon="@drawable/qrcode_icon"
+        android:title="تحضير"/>
+
+    <item
+        android:title="بيانات الحضور"
+        android:id="@+id/n_charts"
+        android:icon="@drawable/chart_icon"/>
+
+    <item
+        android:icon="@drawable/generate_icon"
+        android:id="@+id/n_generate"
+        android:title="تحضير جديد"/>
+
+</menu>
