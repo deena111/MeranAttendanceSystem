@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -27,20 +28,34 @@ import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class ScanQR<Final> extends Fragment {
 
    // private EditText s_warningtxt;
 
     private TextView s_txtResult;
-    private Button s_inbtn;
-    private Button s_outbtn;
+    private RadioButton s_inrad;
+    private RadioButton s_outrad;
     private SurfaceView s_camera;
     private BarcodeDetector barcodeDetector;
     private CameraSource cameraSource;
     final int RequestCameraPermissionID = 1001;
+    private DatabaseReference mRoottRef ;
+    private DatabaseReference QRcodekey ;
+    private DatabaseReference IN;
+    private DatabaseReference OUT ;
+    private String Data;
+    private Date date;
+
 
 
     @Override
@@ -67,8 +82,18 @@ public class ScanQR<Final> extends Fragment {
         View v = inflater.inflate(R.layout.scanqr, null);
 
         s_txtResult=(TextView)v.findViewById(R.id.s_txtresult);
-        s_inbtn = (Button) v.findViewById(R.id.s_inbtn);
-        s_outbtn = (Button) v.findViewById(R.id.s_outbtn);
+        s_inrad = (RadioButton) v.findViewById(R.id.s_inrad);
+        s_outrad = (RadioButton) v.findViewById(R.id.s_outrad);
+        date = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        String day = formatter.format(date).substring(0,2);
+        String month = formatter.format(date).substring(3,5);
+        String year = formatter.format(date).substring(6,10);
+        String time = formatter.format(date).substring(11);
+        mRoottRef.child("Employees").child("UID").child("Attendance").child(year).child(month).child(day);
+        IN = mRoottRef.child("Employees").child("UID").child("Attendance").child(year).child(month).child(day).child("In");
+        OUT= mRoottRef.child("Employees").child("UID").child("Attendance").child(year).child(month).child(day).child("Out");
+
 
         s_camera = (SurfaceView) v.findViewById(R.id.s_camera);
         barcodeDetector = new BarcodeDetector.Builder(getActivity().getApplicationContext())
@@ -110,22 +135,55 @@ public class ScanQR<Final> extends Fragment {
 
             }
 
+
+            //
+
             @Override
             public void receiveDetections(Detector.Detections<Barcode> detections) {
                 SparseArray<Barcode> qrcodes = detections.getDetectedItems();
                 if(qrcodes.size()!= 0)
                 {
-                    s_txtResult.post(new Runnable() {
-                        @Override
-                        public void run() {
+
                             Vibrator vibrator = (Vibrator)getActivity().getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
                             vibrator.vibrate(1000);
-                            s_txtResult.setText(qrcodes.valueAt(0).displayValue);
-                        }
-                    });
+                          //  s_txtResult.setText(qrcodes.valueAt(0).displayValue);
+
+                            String Scancode =  qrcodes.valueAt(0).displayValue;
+                            if(Data == Scancode)
+                            {
+                              // here we chick radiobutton
+                                switch (v.getId())
+                                {
+                                    case R.id.s_inrad:
+                                      IN.setValue(time);
+                                      break;
+                                    case  R.id.s_outrad:
+                                        OUT.setValue(time);
+                                        break;
+                                }
+
+                            }
                 }
             }
         });
+
+
+        mRoottRef= FirebaseDatabase.getInstance().getReference();
+        QRcodekey = mRoottRef.child("QRcodekey");
+        QRcodekey.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                 Data = dataSnapshot.getValue(String.class);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+
+
+        });
+
 
         return v;}
 }
