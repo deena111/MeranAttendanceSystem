@@ -41,11 +41,11 @@ public class AdminMain extends Fragment {
                                 .commit();
                         break;
                     case R.id.n_charts:
-                        /*getActivity().getSupportFragmentManager()
+                        getActivity().getSupportFragmentManager()
                                 .beginTransaction()
                                 .addToBackStack(null)
-                                .replace(R.id.m_container, new Chart())
-                                .commit();*/
+                                .replace(R.id.m_container, new EmployeesAttendance())
+                                .commit();
                         break;
                     case R.id.n_generate:
                         /*getActivity().getSupportFragmentManager()

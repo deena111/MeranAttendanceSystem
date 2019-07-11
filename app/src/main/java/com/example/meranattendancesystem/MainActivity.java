@@ -17,6 +17,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,9 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private Button signup ;
     private FirebaseAuth currentuser;
     private ProgressDialog pd;
-
-
-
+    private DatabaseReference Ref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
