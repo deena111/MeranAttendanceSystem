@@ -18,6 +18,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -31,13 +32,14 @@ public class MainActivity extends AppCompatActivity {
     private Button signup ;
     private FirebaseAuth currentuser;
     private ProgressDialog pd;
-    private DatabaseReference Ref;
+    private DatabaseReference ref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         currentuser = FirebaseAuth.getInstance();
+        ref = FirebaseDatabase.getInstance().getReference();
         if (currentuser.getCurrentUser() != null) {
             getSupportFragmentManager()
                     .beginTransaction()
@@ -115,6 +117,13 @@ public class MainActivity extends AppCompatActivity {
                 pd.dismiss();
                 if(task.isSuccessful()){
                     Toast.makeText(getApplicationContext(), "ok",Toast.LENGTH_LONG).show();
+                    //Name
+                    ref.child("Employees").child(currentuser.getCurrentUser().getUid())
+                            .child("Name").setValue(Name);
+                    //Email
+                    ref.child("Employees").child(currentuser.getCurrentUser().getUid())
+                            .child("Email").setValue(Email);
+
                 }
                 else
                 {
