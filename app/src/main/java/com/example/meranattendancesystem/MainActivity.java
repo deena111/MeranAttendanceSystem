@@ -17,8 +17,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth currentuser;
     private ProgressDialog pd;
     private DatabaseReference ref;
+    private String Admin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,8 +44,29 @@ public class MainActivity extends AppCompatActivity {
 
         currentuser = FirebaseAuth.getInstance();
         ref = FirebaseDatabase.getInstance().getReference();
+        ref.child("AdminEmail").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Admin = dataSnapshot.getValue(String.class);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+
+        });
+
         if (currentuser.getCurrentUser() != null) {
-            getSupportFragmentManager()
+
+            if(Admin == currentuser.getCurrentUser().getEmail()) {
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.m_container, new AdminMain())
+                        .addToBackStack(null)
+                        .commit();
+            }else
+                getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.m_container, new ScanQR())
                     .addToBackStack(null)
@@ -67,11 +92,20 @@ public class MainActivity extends AppCompatActivity {
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.m_container, new Login())
-                        .addToBackStack(null)
-                        .commit();
+
+                if(Admin == currentuser.getCurrentUser().getEmail()) {
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.m_container, new AdminMain())
+                            .addToBackStack(null)
+                            .commit();
+                }
+                else
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.m_container, new Login())
+                            .addToBackStack(null)
+                            .commit();
             }
         });
     }
@@ -83,40 +117,38 @@ public class MainActivity extends AppCompatActivity {
 
 
         if (TextUtils.isEmpty(Name)) {
-            nametxt.setError("Name Empty");
+            nametxt.setError("يرجى إدخال الاسم");
             nametxt.requestFocus();
             return;
         }
         if (TextUtils.isEmpty(Pass)) {
-            passtxt.setError("Pass Empty");
+            passtxt.setError("يرجى إدخال كلمة المرور");
             passtxt.requestFocus();
             return;
         }
         if (TextUtils.isEmpty(Email)) {
-            emailtxt.setError("Email Empty");
+            emailtxt.setError("يرجى إدخال البريد الالكتروني");
             emailtxt.requestFocus();
             return;
         }
         if (Pass.length()<6) {
-            passtxt.setError("Pass Invalid");
+            passtxt.setError("يجب أن تكون كلمة المرور أطول من 6");
             passtxt.requestFocus();
             return;
         }
         if (!isValidEmail(Email)) {
-            emailtxt.setError("Email Invalid");
+            emailtxt.setError("البريد الالكتروني غير صالح");
             return;
         }
 
-         pd.setMessage("REGISTRATION");
-         pd.show();
 
 
             currentuser.createUserWithEmailAndPassword(Email,Pass).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-                pd.dismiss();
+                //pd.dismiss();
                 if(task.isSuccessful()){
-                    Toast.makeText(getApplicationContext(), "ok",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "تم التسجيل بنجاح",Toast.LENGTH_LONG).show();
                     //Name
                     ref.child("Employees").child(currentuser.getCurrentUser().getUid())
                             .child("Name").setValue(Name);
@@ -127,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 else
                 {
-                    Toast.makeText(getApplicationContext(), "not ok",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "فشل التسجيل",Toast.LENGTH_LONG).show();
                 }
             }
         });

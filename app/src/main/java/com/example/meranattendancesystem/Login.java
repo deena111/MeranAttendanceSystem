@@ -18,6 +18,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,7 +33,11 @@ public class Login extends Fragment {
     private EditText l_pass;
     private Button l_login;
     private FirebaseAuth auth;
+    private DatabaseReference ref;
     private ProgressDialog pd;
+    private String Admin;
+
+
 
 
     @Nullable
@@ -41,7 +50,19 @@ public class Login extends Fragment {
         l_login = (Button) v.findViewById(R.id.l_loginbtn);
         pd = new ProgressDialog(getActivity().getApplicationContext());
         auth = FirebaseAuth.getInstance();
+        ref = FirebaseDatabase.getInstance().getReference();
+        ref.child("AdminEmail").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Admin = dataSnapshot.getValue(String.class);
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+
+        });
         l_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -57,22 +78,22 @@ public class Login extends Fragment {
         Pass = l_pass.getText().toString();
 
         if (TextUtils.isEmpty(Pass)) {
-            l_pass.setError("Pass Empty");
+            l_pass.setError("يرجى إدخال كلمة المرور");
             l_pass.requestFocus();
             return;
         }
         if (TextUtils.isEmpty(Email)) {
-            l_email.setError("Email Empty");
+            l_email.setError("يرجى إدخال البريد الالكتروني");
             l_email.requestFocus();
             return;
         }
         if (Pass.length()<6) {
-            l_pass.setError("Pass Invalid");
+            l_pass.setError("يجب أن تكون كلمة المرور أطول من 6");
             l_pass.requestFocus();
             return;
         }
         if (!isValidEmail(Email)) {
-            l_email.setError("Email Invalid");
+            l_email.setError("البريد الالكتروني غير صالح");
             return;
         }
 
@@ -85,16 +106,24 @@ public class Login extends Fragment {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         pd.dismiss();
                         if(task.isSuccessful()){
-                            Toast.makeText(getActivity().getApplicationContext(), "ok",Toast.LENGTH_LONG).show();
+                            Toast.makeText(getActivity().getApplicationContext(), "تم تسجيل الدخول بنجاح",Toast.LENGTH_LONG).show();
+
+                            if(Admin == auth.getCurrentUser().getEmail()) {
+                                getActivity().getSupportFragmentManager()
+                                        .beginTransaction()
+                                        .replace(R.id.m_container, new AdminMain())
+                                        .addToBackStack(null)
+                                        .commit();
+                            }
+                            else
                             getActivity().getSupportFragmentManager()
                                 .beginTransaction()
                                 .replace(R.id.m_container, new ScanQR())
-                            .addToBackStack(null)
-                                .commit();
+                                        .addToBackStack(null).commit();
                         }
                         else
                         {
-                            Toast.makeText(getActivity().getApplicationContext(), "not ok",Toast.LENGTH_LONG).show();
+                            Toast.makeText(getActivity().getApplicationContext(), "فشل تسجيل الدخول ",Toast.LENGTH_LONG).show();
                         }
                     }
                 });
