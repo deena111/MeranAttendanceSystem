@@ -55,7 +55,7 @@ public class GenerateQR extends Fragment {
 
                 }
                 catch (WriterException e) {
-                e.printStackTrace();
+                    e.printStackTrace();
                 }
             }
         });

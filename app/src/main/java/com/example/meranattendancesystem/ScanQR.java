@@ -156,7 +156,7 @@ public class ScanQR<Final> extends Fragment {
                           //  s_txtResult.setText(qrcodes.valueAt(0).displayValue);
 
                             String Scancode =  qrcodes.valueAt(0).displayValue;
-                            if(Data == Scancode)
+                            if(Data.equals(Scancode))
                             {
                               // here we chick radiobutton
                                 switch (v.getId())
