@@ -47,7 +47,6 @@ dependencies {
     //Chart
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 
-
     //zxinglibrary
     implementation 'com.google.zxing:core:3.2.0'
     implementation 'com.journeyapps:zxing-android-embedded:3.6.0'

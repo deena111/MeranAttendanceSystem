@@ -48,11 +48,11 @@ public class AdminMain extends Fragment {
                                 .commit();
                         break;
                     case R.id.n_generate:
-                        /*getActivity().getSupportFragmentManager()
+                        getActivity().getSupportFragmentManager()
                                 .beginTransaction()
                                 .addToBackStack(null)
                                 .replace(R.id.m_container, new GenerateQR())
-                                .commit();*/
+                                .commit();
                         break;
                 }
                 return true;
