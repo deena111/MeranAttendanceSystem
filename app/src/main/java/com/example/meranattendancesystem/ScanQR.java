@@ -92,7 +92,7 @@ public class ScanQR<Final> extends Fragment {
         mRoottRef= FirebaseDatabase.getInstance().getReference();
 
         date = new Date();
-        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm");
         String day = formatter.format(date).substring(0,2);
         String month = formatter.format(date).substring(3,5);
         String year = formatter.format(date).substring(6,10);
