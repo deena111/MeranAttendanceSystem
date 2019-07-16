@@ -20,6 +20,7 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
@@ -41,6 +42,8 @@ public class EmployeesAttendance extends Fragment{
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.employees_attendanc, null);
+
+        Ref = FirebaseDatabase.getInstance().getReference();
 
         //Setting Spinner
         droplist = (Spinner) v.findViewById(R.id.e_a_emplist);

@@ -48,22 +48,13 @@ public class SignUp extends Fragment {
         //Firebase root ref
         ref = FirebaseDatabase.getInstance().getReference();
 
-
         //If user already logged in move to the suitable page
         if (currentuser.getCurrentUser() != null) {
-
-            if(Admin == currentuser.getCurrentUser().getEmail()) {
-                getActivity().getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.m_container, new AdminMain())
-                        .addToBackStack(null)
-                        .commit();
-            }else
-                getActivity().getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.m_container, new ScanQR())
-                        .addToBackStack(null)
-                        .commit();
+            getActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.m_container, new CheckAdmin())
+                    .addToBackStack(null)
+                    .commit();
         }
 
         //Set the view
@@ -136,16 +127,6 @@ public class SignUp extends Fragment {
                 if(task.isSuccessful()){
                     Toast.makeText(getActivity().getApplicationContext(), "تم التسجيل بنجاح",Toast.LENGTH_LONG).show();
 
-                    //Getting Admin's Email
-                    ref.child("AdminEmail").addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            Admin = dataSnapshot.getValue(String.class); }
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) { }
-                    });
-                    Toast.makeText(getActivity().getApplicationContext(), Admin,Toast.LENGTH_LONG).show();
-
                     //Name
                     ref.child("Employees").child(currentuser.getCurrentUser().getUid())
                             .child("Name").setValue(Name);
@@ -153,20 +134,12 @@ public class SignUp extends Fragment {
                     ref.child("Employees").child(currentuser.getCurrentUser().getUid())
                             .child("Email").setValue(Email);
 
-
-                    /*if(Admin.equals(Email)) {
-                        getActivity().getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.m_container, new AdminMain())
-                                .addToBackStack(null)
-                                .commit();
-                    }
-                    else*/
-                        getActivity().getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.m_container, new ScanQR())
-                                .addToBackStack(null)
-                                .commit();
+                    //Go to check
+                    getActivity().getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.m_container, new CheckAdmin())
+                            .addToBackStack(null)
+                            .commit();
                 }
                 else
                     Toast.makeText(getActivity().getApplicationContext(), "فشل التسجيل",Toast.LENGTH_LONG).show();

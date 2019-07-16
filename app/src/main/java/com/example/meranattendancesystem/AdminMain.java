@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,12 +21,15 @@ public class AdminMain extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.admin_main, null);
+
+        Toast.makeText(getContext(), "HERE ADMIN", Toast.LENGTH_LONG).show();
+
         //Go to ScanPage
-        getActivity().getSupportFragmentManager()
+        /*getActivity().getSupportFragmentManager()
                 .beginTransaction()
                 .addToBackStack(null)
                 .replace(R.id.m_container, new ScanQR())
-                .commit();
+                .commit();*/
 
         //NavigationBar
         nav = (BottomNavigationView) v.findViewById(R.id.a_m_nav);

@@ -33,9 +33,6 @@ public class Login extends Fragment {
     private EditText l_pass;
     private Button l_login;
     private FirebaseAuth auth;
-    private DatabaseReference ref;
-    private ProgressDialog pd;
-    private String Admin;
 
 
 
@@ -48,21 +45,9 @@ public class Login extends Fragment {
         l_email = (EditText) v.findViewById(R.id.l_emailtxt);
         l_pass = (EditText) v.findViewById(R.id.l_passtxt);
         l_login = (Button) v.findViewById(R.id.l_loginbtn);
-        pd = new ProgressDialog(getActivity().getApplicationContext());
+
         auth = FirebaseAuth.getInstance();
-        ref = FirebaseDatabase.getInstance().getReference();
-        ref.child("AdminEmail").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Admin = dataSnapshot.getValue(String.class);
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-
-        });
         l_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -72,6 +57,7 @@ public class Login extends Fragment {
 
         return v;
     }
+
     public void login(){
         String Email,Pass;
         Email = l_email.getText().toString();
@@ -97,32 +83,19 @@ public class Login extends Fragment {
             return;
         }
 
-        //pd.setMessage("LOGIN");
-       // pd.show();
-
         auth.signInWithEmailAndPassword(Email,Pass)
                 .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        pd.dismiss();
                         if(task.isSuccessful()){
                             Toast.makeText(getActivity().getApplicationContext(), "تم تسجيل الدخول بنجاح",Toast.LENGTH_LONG).show();
 
-                            if(Admin == auth.getCurrentUser().getEmail()) {
                                 getActivity().getSupportFragmentManager()
                                         .beginTransaction()
-                                        .replace(R.id.m_container, new AdminMain())
-                                        .addToBackStack(null)
-                                        .commit();
-                            }
-                            else
-                            getActivity().getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.m_container, new ScanQR())
-                                        .addToBackStack(null).commit();
+                                        .replace(R.id.m_container, new CheckAdmin())
+                                        .addToBackStack(null);
                         }
-                        else
-                        {
+                        else{
                             Toast.makeText(getActivity().getApplicationContext(), "فشل تسجيل الدخول ",Toast.LENGTH_LONG).show();
                         }
                     }
