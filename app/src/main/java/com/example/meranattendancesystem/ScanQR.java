@@ -41,6 +41,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static androidx.core.content.ContextCompat.checkSelfPermission;
+
 public class ScanQR<Final> extends Fragment {
 
    // private EditText s_warningtxt;
@@ -51,7 +53,6 @@ public class ScanQR<Final> extends Fragment {
     private SurfaceView s_camera;
     private BarcodeDetector barcodeDetector;
     private CameraSource cameraSource;
-    final int RequestCameraPermissionID = 1001;
     private DatabaseReference mRoottRef ;
     private DatabaseReference QRcodekey ;
     private DatabaseReference IN;
@@ -60,15 +61,18 @@ public class ScanQR<Final> extends Fragment {
     private String Data;
     private Date date;
 
-
+    private final int RequestCameraPermissionID = 1001;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case RequestCameraPermissionID:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if (ActivityCompat.checkSelfPermission(getActivity().getApplicationContext() ,android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                        ActivityCompat.requestPermissions(getActivity() , new String[]{Manifest.permission.CAMERA},RequestCameraPermissionID);
+                    if (checkSelfPermission(getActivity().getApplicationContext()
+                            ,Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(getActivity(),
+                                new String[]{Manifest.permission.CAMERA},
+                                RequestCameraPermissionID);
                         return;
                     }
                     try {
@@ -97,6 +101,7 @@ public class ScanQR<Final> extends Fragment {
         String month = formatter.format(date).substring(3,5);
         String year = formatter.format(date).substring(6,10);
         String time = formatter.format(date).substring(11);
+
         //mRoottRef.child("Employees").child(currentuser.getUid()).child("Attendance").child(year).child(month).child(day);
         IN = mRoottRef.child("Employees").child(currentuser.getUid()).child("Attendance").child(year).child(month).child(day).child("In");
         OUT= mRoottRef.child("Employees").child(currentuser.getUid()).child("Attendance").child(year).child(month).child(day).child("Out");
@@ -106,16 +111,18 @@ public class ScanQR<Final> extends Fragment {
         barcodeDetector = new BarcodeDetector.Builder(getActivity().getApplicationContext())
                 .setBarcodeFormats(Barcode.QR_CODE)
                 .build();
-        cameraSource = new CameraSource
-                .Builder(getActivity().getApplicationContext(), barcodeDetector)
+        cameraSource = new CameraSource.Builder(getActivity().getApplicationContext(),
+                barcodeDetector)
                 .setRequestedPreviewSize(640, 480)
                 .build();
         s_camera.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder surfaceHolder) {
-
-                if (ActivityCompat.checkSelfPermission(getActivity().getApplicationContext() ,android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(getActivity() , new String[]{Manifest.permission.CAMERA},RequestCameraPermissionID);
+                if (checkSelfPermission(getActivity().getApplicationContext(),
+                        Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(getActivity(),
+                            new String[]{Manifest.permission.CAMERA},
+                            RequestCameraPermissionID);
                     return;
                 }
                 try {
@@ -139,11 +146,7 @@ public class ScanQR<Final> extends Fragment {
         barcodeDetector.setProcessor(new Detector.Processor<Barcode>() {
             @Override
             public void release() {
-
             }
-
-
-            //
 
             @Override
             public void receiveDetections(Detector.Detections<Barcode> detections) {
@@ -151,25 +154,25 @@ public class ScanQR<Final> extends Fragment {
                 if(qrcodes.size()!= 0)
                 {
                     Toast.makeText(getActivity().getApplicationContext(), "تم التحضير بنجاح",Toast.LENGTH_LONG).show();
-                            Vibrator vibrator = (Vibrator)getActivity().getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
-                            vibrator.vibrate(1000);
-                          //  s_txtResult.setText(qrcodes.valueAt(0).displayValue);
 
-                            String Scancode =  qrcodes.valueAt(0).displayValue;
-                            if(Data.equals(Scancode))
-                            {
-                              // here we chick radiobutton
-                                switch (v.getId())
-                                {
-                                    case R.id.s_inrad:
-                                      IN.setValue(time);
-                                      break;
-                                    case  R.id.s_outrad:
-                                        OUT.setValue(time);
-                                        break;
-                                }
+                    Vibrator vibrator = (Vibrator) getActivity().getApplicationContext()
+                            .getSystemService(getActivity().getApplicationContext().VIBRATOR_SERVICE);
+                    vibrator.vibrate(1000);
 
-                            }
+                    String Scancode =  qrcodes.valueAt(0).displayValue;
+                    Toast.makeText(getActivity().getApplicationContext(), "تم التحضير بنجاح",Toast.LENGTH_LONG).show();
+                    /*if(Data.equals(Scancode))
+                    {
+                        // here we chick radiobutton
+                        switch (v.getId()) {
+                            case R.id.s_inrad:
+                                IN.setValue(time);
+                                break;
+                                case  R.id.s_outrad:
+                                    OUT.setValue(time);
+                                    break;
+                        }
+                    }*/
                 }
             }
         });
