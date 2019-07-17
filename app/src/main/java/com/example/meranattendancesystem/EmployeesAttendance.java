@@ -1,5 +1,6 @@
 package com.example.meranattendancesystem;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,9 +15,12 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -32,11 +36,8 @@ public class EmployeesAttendance extends Fragment{
 
     private Spinner droplist;
     private LineChart EmpChart;
-    private List<String> EmpNames;//DELETE?
     private List<String> EmpUIDs;
     private DatabaseReference Ref;
-    private int EmpIndex;//DELETE?
-    private String EmpUID;//DELETE?
 
     @Nullable
     @Override
@@ -47,7 +48,6 @@ public class EmployeesAttendance extends Fragment{
 
         //Setting Spinner
         droplist = (Spinner) v.findViewById(R.id.e_a_emplist);
-        EmpNames = new ArrayList<String>();//DELETE?
         SetEmployeesList();
 
         //List of UID
@@ -57,23 +57,33 @@ public class EmployeesAttendance extends Fragment{
         //Line chart
         EmpChart = (LineChart) v.findViewById(R.id.e_a_chart);
         EmpChart.animateX(1000);
+        EmpChart.getDescription().setEnabled(false);
+        SetAxises();
 
         //Spinner selected item & find UID & set chart data
-        droplist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        droplist.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                EmpIndex = i;//DELETE?
-                EmpUID = EmpUIDs.get(i);//DELETE?
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 setChart(EmpUIDs.get(i));
             }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) { }
         });
 
         return v;
     }
 
+    private void SetAxises() {
+        XAxis xAxis = EmpChart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+
+
+    }
+
+    //Return list of UIDs
     private List<String> EmpUIDsList() {
         final List<String> list = new ArrayList<String>();
-        //orderByChild("Name") ??
         Ref.child("Employees").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -82,16 +92,14 @@ public class EmployeesAttendance extends Fragment{
                     list.add(UID);
                 }
             }
-
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
+            public void onCancelled(@NonNull DatabaseError databaseError) { }
         });
 
         return list;
     }
 
+    //Set the spinner with employees' names
     private void SetEmployeesList() {
         List<String> list = new ArrayList<String>();
 
@@ -118,6 +126,7 @@ public class EmployeesAttendance extends Fragment{
         });
     }
 
+    //Set chart with data
     private void setChart(String UID){
         Date date = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
@@ -132,64 +141,36 @@ public class EmployeesAttendance extends Fragment{
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot ss: dataSnapshot.getChildren()) {
                     int day = Integer.parseInt(ss.getKey());
-                    float timeIn = TimeToFloat(ss.child("In").getValue(String.class));
-                    float timeOut = TimeToFloat(ss.child("Out").getValue(String.class));
+                    float timeIn = ToFloat(ss.child("In").getValue(String.class));
+                    float timeOut = ToFloat(ss.child("Out").getValue(String.class));
                     InList.add(new Entry(day, timeIn));
                     OutList.add(new Entry(day, timeOut));
                 }
                 LineDataSet InSet = new LineDataSet(InList, "الحضور");
                 LineDataSet OutSet = new LineDataSet(OutList, "الانصراف");
+
+                InSet.setColor(Color.BLACK);
+
                 LineData chartData = new LineData(InSet, OutSet);
                 EmpChart.setData(chartData);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
             }
         });
-
     }
 
-    private float TimeToFloat(String tmpHours) throws NumberFormatException {
-        float result = 0;
-        tmpHours = tmpHours.trim();
+    private float ToFloat(String time) {
+        String resultS = "";
+        resultS = resultS + time.substring(0, 2);
 
-        // Try converting to float first
-        try
-        {
-            result = new Float(tmpHours);
-        }
-        catch(NumberFormatException nfe)
-        {
-            // OK so that didn't work.  Did they use a colon?
-            if(tmpHours.contains(":"))
-            {
-                int hours = 0;
-                int minutes = 0;
-                int locationOfColon = tmpHours.indexOf(":");
-                try {
-                    hours = new Integer(tmpHours.substring(0, locationOfColon-1));
-                    minutes = new Integer(tmpHours.substring(locationOfColon+1));
-                }
-                catch(NumberFormatException nfe2) {
-                    //need to do something here if they are still formatted wrong.
-                    //perhaps throw the exception to the user to the UI to force the user
-                    //to put in a correct value.
-                    throw nfe2;
-                }
+        double min = Double.parseDouble(time.substring(3))/60;
 
-                //add in partial hours (ie minutes if minutes are greater than zero.
-                if(minutes > 0) {
-                    result = minutes / 60;
-                }
+        resultS = resultS + Double.toString(min).substring(1);
 
-                //now add in the full number of hours.
-                result += hours;
-            }
-        }
-
-        return result;
+        return Float.parseFloat(resultS);
     }
+
 
 }

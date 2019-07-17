@@ -33,8 +33,8 @@ public class Login extends Fragment {
     private EditText l_pass;
     private Button l_login;
     private FirebaseAuth auth;
-
-
+    private DatabaseReference ref;
+    private String Admin;
 
 
     @Nullable
@@ -46,8 +46,13 @@ public class Login extends Fragment {
         l_pass = (EditText) v.findViewById(R.id.l_passtxt);
         l_login = (Button) v.findViewById(R.id.l_loginbtn);
 
+        //Firebase Auth
         auth = FirebaseAuth.getInstance();
 
+        //Firebase root ref
+        ref = FirebaseDatabase.getInstance().getReference();
+
+        //Login button
         l_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -90,10 +95,16 @@ public class Login extends Fragment {
                         if(task.isSuccessful()){
                             Toast.makeText(getActivity().getApplicationContext(), "تم تسجيل الدخول بنجاح",Toast.LENGTH_LONG).show();
 
-                                getActivity().getSupportFragmentManager()
-                                        .beginTransaction()
-                                        .replace(R.id.m_container, new CheckAdmin())
-                                        .addToBackStack(null);
+                            //Get Admin's email & move to next page
+                            ref.child("AdminEmail").addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    Admin = dataSnapshot.getValue(String.class);
+                                    DirectToSuitablePage(Admin, auth.getCurrentUser().getEmail());
+                                }
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) { }
+                            });
                         }
                         else{
                             Toast.makeText(getActivity().getApplicationContext(), "فشل تسجيل الدخول ",Toast.LENGTH_LONG).show();
@@ -110,4 +121,21 @@ public class Login extends Fragment {
         Matcher matcher = pattern.matcher(email);
         return matcher.matches();
     }
+
+    private void DirectToSuitablePage(String AdminEmail, String CurrentEmail) {
+        //move user to the suitable page
+        if(CurrentEmail.equalsIgnoreCase(AdminEmail)){
+            getActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.m_container, new AdminMain())
+                    .commit();
+        }
+        else {
+            getActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.m_container, new ScanQR())
+                    .commit();
+        }
+    }
+
 }

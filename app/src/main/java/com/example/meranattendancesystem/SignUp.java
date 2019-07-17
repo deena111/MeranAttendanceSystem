@@ -37,7 +37,6 @@ public class SignUp extends Fragment {
     private FirebaseAuth currentuser;
     private DatabaseReference ref;
     private String Admin;
-    private ProgressDialog pd;//ProgressBar
 
     @Nullable
     @Override
@@ -48,13 +47,17 @@ public class SignUp extends Fragment {
         //Firebase root ref
         ref = FirebaseDatabase.getInstance().getReference();
 
-        //If user already logged in move to the suitable page
+        //User already logged in
         if (currentuser.getCurrentUser() != null) {
-            getActivity().getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.m_container, new CheckAdmin())
-                    .addToBackStack(null)
-                    .commit();
+            ref.child("AdminEmail").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    Admin = dataSnapshot.getValue(String.class);
+                    DirectToSuitablePage(Admin, currentuser.getCurrentUser().getEmail());
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) { }
+            });
         }
 
         //Set the view
@@ -83,7 +86,6 @@ public class SignUp extends Fragment {
                             .commit();
             }
         });
-
         return v;
     }
 
@@ -134,12 +136,16 @@ public class SignUp extends Fragment {
                     ref.child("Employees").child(currentuser.getCurrentUser().getUid())
                             .child("Email").setValue(Email);
 
-                    //Go to check
-                    getActivity().getSupportFragmentManager()
-                            .beginTransaction()
-                            .replace(R.id.m_container, new CheckAdmin())
-                            .addToBackStack(null)
-                            .commit();
+                    //Get Admin's email & move to next page
+                    ref.child("AdminEmail").addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            Admin = dataSnapshot.getValue(String.class);
+                            DirectToSuitablePage(Admin, currentuser.getCurrentUser().getEmail());
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) { }
+                    });
                 }
                 else
                     Toast.makeText(getActivity().getApplicationContext(), "فشل التسجيل",Toast.LENGTH_LONG).show();
@@ -154,6 +160,22 @@ public class SignUp extends Fragment {
         Pattern pattern = Pattern.compile(EMAIL_PATTERN);
         Matcher matcher = pattern.matcher(email);
         return matcher.matches();
+    }
+
+    private void DirectToSuitablePage(String AdminEmail, String CurrentEmail) {
+        //move user to the suitable page
+        if(CurrentEmail.equalsIgnoreCase(AdminEmail)){
+            getActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.m_container, new AdminMain())
+                    .commit();
+        }
+        else {
+            getActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.m_container, new ScanQR())
+                    .commit();
+        }
     }
 
 }

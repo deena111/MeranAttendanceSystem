@@ -35,6 +35,7 @@ public class GenerateQR extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.scanqr, null);
+
         g_qrtxt = (EditText) v.findViewById(R.id.g_qrtxt);
         g_qrbtn = (Button) v.findViewById(R.id.g_qrbtn);
         g_savebtn = (Button) v.findViewById(R.id.g_savebtn);

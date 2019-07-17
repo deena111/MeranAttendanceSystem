@@ -15,4 +15,15 @@
         app:layout_constraintStart_toStartOf="parent"
         android:background="?android:attr/windowBackground"
         app:menu="@menu/nav"/>
+
+    <FrameLayout
+        android:id="@+id/a_m_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/a_m_nav"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

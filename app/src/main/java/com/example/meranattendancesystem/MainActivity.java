@@ -38,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.m_container, new SignUp())
-                .addToBackStack(null)
                 .commit();
 
     }

@@ -22,14 +22,12 @@ public class AdminMain extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.admin_main, null);
 
-        Toast.makeText(getContext(), "HERE ADMIN", Toast.LENGTH_LONG).show();
-
         //Go to ScanPage
-        /*getActivity().getSupportFragmentManager()
+        getActivity().getSupportFragmentManager()
                 .beginTransaction()
                 .addToBackStack(null)
-                .replace(R.id.m_container, new ScanQR())
-                .commit();*/
+                .replace(R.id.a_m_container, new AttendanceScanner())
+                .commit();
 
         //NavigationBar
         nav = (BottomNavigationView) v.findViewById(R.id.a_m_nav);
@@ -41,21 +39,21 @@ public class AdminMain extends Fragment {
                         getActivity().getSupportFragmentManager()
                                 .beginTransaction()
                                 .addToBackStack(null)
-                                .replace(R.id.m_container, new ScanQR())
+                                .replace(R.id.a_m_container, new AttendanceScanner())
                                 .commit();
                         break;
                     case R.id.n_charts:
                         getActivity().getSupportFragmentManager()
                                 .beginTransaction()
                                 .addToBackStack(null)
-                                .replace(R.id.m_container, new EmployeesAttendance())
+                                .replace(R.id.a_m_container, new EmployeesAttendance())
                                 .commit();
                         break;
                     case R.id.n_generate:
                         getActivity().getSupportFragmentManager()
                                 .beginTransaction()
                                 .addToBackStack(null)
-                                .replace(R.id.m_container, new GenerateQR())
+                                .replace(R.id.a_m_container, new GenerateQR())
                                 .commit();
                         break;
                 }
