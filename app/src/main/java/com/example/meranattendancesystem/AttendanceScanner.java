@@ -4,6 +4,8 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Vibrator;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -12,6 +14,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -39,6 +42,7 @@ public class AttendanceScanner extends Fragment {
     private BarcodeDetector barcodeDetector;
     private RadioButton inbtn;
     private RadioButton outbtn;
+    private RadioGroup radiog;
     private DatabaseReference ref;
     private FirebaseAuth currentuser;
     private String year;
@@ -65,11 +69,20 @@ public class AttendanceScanner extends Fragment {
                 .child(year).child(month).child(day);
 
 
-        //Set SurfaceView & Radiobuttons
+        //Set SurfaceView invisible at the beginning & Radiobuttons
         surfaceView = (SurfaceView) v.findViewById(R.id.a_s_surfacev);
+        surfaceView.setVisibility(View.INVISIBLE);
         inbtn = (RadioButton) v.findViewById(R.id.a_s_in);
         outbtn = (RadioButton) v.findViewById(R.id.a_s_in);
+        radiog = (RadioGroup) v.findViewById(R.id.a_s_radiog);
 
+        //When radio button is checked set the surfaceview visible
+        radiog.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                surfaceView.setVisibility(View.VISIBLE);
+            }
+        });
 
         //Set BarcodeDetector
         barcodeDetector = new BarcodeDetector.Builder(getActivity().getApplicationContext())
@@ -120,18 +133,27 @@ public class AttendanceScanner extends Fragment {
             public void receiveDetections(Detector.Detections<Barcode> detections) {
                 SparseArray<Barcode> qrCodes = detections.getDetectedItems();
                 if (qrCodes.size() != 0) {
-                    Vibrator vibrator = (Vibrator) (getActivity().getApplicationContext())
-                            .getSystemService(Context.VIBRATOR_SERVICE);
-                    vibrator.vibrate(1000);
-                    if (inbtn.isChecked()){
-                        ref.child("In").setValue(time);
-                    }
-                    else if (outbtn.isChecked()){
-                        ref.child("Out").setValue(time);
-                    }
-                    Toast.makeText(getActivity().getApplicationContext(),
-                            "تم التحضير بنجاح",
-                            Toast.LENGTH_LONG).show();
+                    Handler handler = new Handler(Looper.getMainLooper());
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Vibrator vibrator = (Vibrator) (getActivity().getApplicationContext())
+                                    .getSystemService(Context.VIBRATOR_SERVICE);
+                            vibrator.vibrate(100);
+                            if (inbtn.isChecked()){
+                                ref.child("In").setValue(time);
+                                Toast.makeText(getActivity().getApplicationContext(),
+                                        "تم التحضير بنجاح",
+                                        Toast.LENGTH_LONG).show();
+                            }
+                            else if (outbtn.isChecked()){
+                                ref.child("Out").setValue(time);
+                                Toast.makeText(getActivity().getApplicationContext(),
+                                        "تم التحضير بنجاح",
+                                        Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
                 }
             }
         });

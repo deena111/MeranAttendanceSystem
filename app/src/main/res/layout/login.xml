@@ -16,8 +16,11 @@
         android:layout_marginTop="292dp"
         android:layout_marginEnd="32dp"
         android:layout_marginRight="32dp"
+        android:background="@drawable/input_outline"
         android:ems="10"
+        android:hint="البريد الالكتروني"
         android:inputType="textEmailAddress"
+        android:padding="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -32,8 +35,11 @@
         android:layout_marginTop="30dp"
         android:layout_marginEnd="32dp"
         android:layout_marginRight="32dp"
+        android:background="@drawable/input_outline"
         android:ems="10"
+        android:hint="كلمة المرور"
         android:inputType="textPassword"
+        android:padding="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/l_emailtxt" />
@@ -47,11 +53,12 @@
         android:layout_marginTop="40dp"
         android:layout_marginEnd="32dp"
         android:layout_marginRight="32dp"
-        android:text="Button"
+        android:background="@color/colorPrimary"
+        android:text="تسجيل الدخول"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/l_passtxt"
-        android:background="@color/colorPrimary"/>
+        app:layout_constraintTop_toBottomOf="@+id/l_passtxt" />
 
     <ImageView
         android:id="@+id/imageView2"

@@ -25,8 +25,8 @@ public class AdminMain extends Fragment {
         //Go to ScanPage
         getActivity().getSupportFragmentManager()
                 .beginTransaction()
-                .addToBackStack(null)
                 .replace(R.id.a_m_container, new AttendanceScanner())
+                .addToBackStack(null)
                 .commit();
 
         //NavigationBar
@@ -38,22 +38,22 @@ public class AdminMain extends Fragment {
                     case R.id.n_scan:
                         getActivity().getSupportFragmentManager()
                                 .beginTransaction()
-                                .addToBackStack(null)
                                 .replace(R.id.a_m_container, new AttendanceScanner())
+                                .addToBackStack(null)
                                 .commit();
                         break;
                     case R.id.n_charts:
                         getActivity().getSupportFragmentManager()
                                 .beginTransaction()
-                                .addToBackStack(null)
                                 .replace(R.id.a_m_container, new EmployeesAttendance())
+                                .addToBackStack(null)
                                 .commit();
                         break;
                     case R.id.n_generate:
                         getActivity().getSupportFragmentManager()
                                 .beginTransaction()
-                                .addToBackStack(null)
                                 .replace(R.id.a_m_container, new GenerateQR())
+                                .addToBackStack(null)
                                 .commit();
                         break;
                 }

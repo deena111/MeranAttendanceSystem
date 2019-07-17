@@ -34,12 +34,11 @@ public class GenerateQR extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.scanqr, null);
+        View v = inflater.inflate(R.layout.generate, null);
 
         g_qrtxt = (EditText) v.findViewById(R.id.g_qrtxt);
         g_qrbtn = (Button) v.findViewById(R.id.g_qrbtn);
         g_savebtn = (Button) v.findViewById(R.id.g_savebtn);
-        g_msgtxt = (TextView) v.findViewById(R.id.g_msgtxt);
         g_imageview = (ImageView) v.findViewById(R.id.g_imageview);
 
         g_qrbtn.setOnClickListener(new View.OnClickListener() {

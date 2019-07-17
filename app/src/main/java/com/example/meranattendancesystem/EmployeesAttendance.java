@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -15,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
@@ -56,14 +58,14 @@ public class EmployeesAttendance extends Fragment{
 
         //Line chart
         EmpChart = (LineChart) v.findViewById(R.id.e_a_chart);
-        EmpChart.animateX(1000);
-        EmpChart.getDescription().setEnabled(false);
-        SetAxises();
+        setChartDesign();
 
-        //Spinner selected item & find UID & set chart data
+        //Spinner selected item & Set Title & find UID & set chart data
         droplist.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                TextView t = (TextView) v.findViewById(R.id.e_a_title);
+                t.setText(droplist.getSelectedItem().toString());
                 setChart(EmpUIDs.get(i));
             }
 
@@ -74,9 +76,24 @@ public class EmployeesAttendance extends Fragment{
         return v;
     }
 
+    private void setChartDesign() {
+        EmpChart.getDescription().setEnabled(false);
+        EmpChart.setNoDataText("البيانات غير متوفرة");
+        EmpChart.setNoDataTextColor(Color.parseColor("#3D646B"));
+        EmpChart.setDrawGridBackground(true);
+        EmpChart.animateX(1000);
+        SetAxises();
+    }
+
     private void SetAxises() {
         XAxis xAxis = EmpChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+
+        YAxis yAxisR = EmpChart.getAxisRight();
+        yAxisR.setDrawLabels(false);
+
+
+        YAxis yAxisL = EmpChart.getAxisLeft();
 
 
     }
@@ -139,17 +156,31 @@ public class EmployeesAttendance extends Fragment{
                 .addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                float timeIn, timeOut;
                 for (DataSnapshot ss: dataSnapshot.getChildren()) {
                     int day = Integer.parseInt(ss.getKey());
-                    float timeIn = ToFloat(ss.child("In").getValue(String.class));
-                    float timeOut = ToFloat(ss.child("Out").getValue(String.class));
-                    InList.add(new Entry(day, timeIn));
-                    OutList.add(new Entry(day, timeOut));
+                    if(ss.child("In").getValue(String.class) == null
+                            || ss.child("Out").getValue(String.class) == null)
+                        continue;
+                    else {
+                        timeIn = ToFloat(ss.child("In").getValue(String.class));
+                        timeOut = ToFloat(ss.child("Out").getValue(String.class));
+                        InList.add(new Entry(day, timeIn));
+                        OutList.add(new Entry(day, timeOut));
+                    }
                 }
                 LineDataSet InSet = new LineDataSet(InList, "الحضور");
                 LineDataSet OutSet = new LineDataSet(OutList, "الانصراف");
 
-                InSet.setColor(Color.BLACK);
+                InSet.setColor(Color.parseColor("#3D646B"));
+                InSet.setLineWidth(2);
+                InSet.setDrawCircles(false);
+                InSet.setValueTextSize(8);
+
+                OutSet.setColor(Color.parseColor("#a58a4e"));
+                OutSet.setLineWidth(2);
+                OutSet.setDrawCircles(false);
+                OutSet.setValueTextSize(8);
 
                 LineData chartData = new LineData(InSet, OutSet);
                 EmpChart.setData(chartData);
@@ -164,11 +195,8 @@ public class EmployeesAttendance extends Fragment{
     private float ToFloat(String time) {
         String resultS = "";
         resultS = resultS + time.substring(0, 2);
-
         double min = Double.parseDouble(time.substring(3))/60;
-
         resultS = resultS + Double.toString(min).substring(1);
-
         return Float.parseFloat(resultS);
     }
 

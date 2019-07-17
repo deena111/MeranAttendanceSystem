@@ -128,12 +128,14 @@ public class Login extends Fragment {
             getActivity().getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.m_container, new AdminMain())
+                    .addToBackStack(null)
                     .commit();
         }
         else {
             getActivity().getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.m_container, new ScanQR())
+                    .addToBackStack(null)
                     .commit();
         }
     }

@@ -39,9 +39,11 @@
             android:layout_height="wrap_content"
             android:layout_gravity="start"
             android:layout_weight="1"
+            android:buttonTint="@color/colorPrimary"
             android:layoutDirection="rtl"
             android:text="الانصراف"
-            android:textAlignment="textStart" />
+            android:textAlignment="textStart"
+            android:textSize="18sp" />
 
         <RadioButton
             android:id="@+id/a_s_in"
@@ -49,8 +51,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="start"
             android:layout_weight="1"
+            android:buttonTint="@color/colorPrimary"
             android:layoutDirection="rtl"
             android:text="الحضور"
-            android:textAlignment="textStart" />
+            android:textAlignment="textStart"
+            android:textSize="16sp" />
     </RadioGroup>
 </androidx.constraintlayout.widget.ConstraintLayout>

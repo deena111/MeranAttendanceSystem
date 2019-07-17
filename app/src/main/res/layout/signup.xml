@@ -15,12 +15,14 @@
         android:layout_marginEnd="32dp"
         android:layout_marginRight="32dp"
         android:ems="10"
-        android:hint="Name"
+        android:hint="الاسم"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:padding="10dp"
+        android:background="@drawable/input_outline"/>
 
     <EditText
         android:id="@+id/m_emailtxt"
@@ -32,11 +34,13 @@
         android:layout_marginEnd="32dp"
         android:layout_marginRight="32dp"
         android:ems="10"
-        android:hint="Email"
+        android:hint="البريد الالكتروني"
         android:inputType="textEmailAddress"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/m_nametxt" />
+        app:layout_constraintTop_toBottomOf="@+id/m_nametxt"
+        android:padding="10dp"
+        android:background="@drawable/input_outline"/>
 
     <EditText
         android:id="@+id/m_passtxt"
@@ -48,11 +52,13 @@
         android:layout_marginEnd="32dp"
         android:layout_marginRight="32dp"
         android:ems="10"
-        android:hint="Password"
+        android:hint="كلمة المرور"
         android:inputType="textPassword"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/m_emailtxt" />
+        app:layout_constraintTop_toBottomOf="@+id/m_emailtxt"
+        android:padding="10dp"
+        android:background="@drawable/input_outline"/>
 
     <Button
         android:id="@+id/m_signbtn"
@@ -64,10 +70,11 @@
         android:layout_marginEnd="32dp"
         android:layout_marginRight="32dp"
         android:background="@color/colorPrimary"
-        android:text="Sign Up"
+        android:text="تسجيل"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/m_passtxt" />
+        app:layout_constraintTop_toBottomOf="@+id/m_passtxt"/>
 
     <Button
         android:id="@+id/m_loginbtn"
@@ -79,7 +86,8 @@
         android:layout_marginEnd="32dp"
         android:layout_marginRight="32dp"
         android:background="@color/colorPrimary"
-        android:text="Login"
+        android:text="تسجيل الدخول"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/m_signbtn" />
