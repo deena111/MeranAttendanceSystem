@@ -1,6 +1,9 @@
 package com.example.meranattendancesystem;
 
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -15,15 +18,19 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.auth.SignInMethodQueryResult;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.net.InetAddress;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,6 +48,13 @@ public class SignUp extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        //Check Internet Connection
+        if(!isOnline())
+            Toast.makeText(getActivity().getApplicationContext(), "يرجى الاتصال بالانترنت",
+                    Toast.LENGTH_SHORT).show();
+
+
+
         //Firebase Auth
         currentuser = FirebaseAuth.getInstance();
 
@@ -147,10 +161,30 @@ public class SignUp extends Fragment {
                         public void onCancelled(@NonNull DatabaseError databaseError) { }
                     });
                 }
-                else
-                    Toast.makeText(getActivity().getApplicationContext(), "فشل التسجيل",Toast.LENGTH_LONG).show();
+                else {
+                    try{
+                        throw task.getException();
+                    }catch (FirebaseAuthUserCollisionException e){
+                        emailtxt.setError("البريد الالكتروني مسجل مسبقا");
+                        emailtxt.requestFocus();
+                    } catch (Exception e) {
+                        CheckReason(e);
+                    }
+                }
             }
         });
+    }
+
+    private void CheckReason(Exception e) {
+        if (!isOnline())
+            Toast.makeText(getActivity().getApplicationContext(),
+                    "يرجى الاتصال بالانترنت",
+                    Toast.LENGTH_LONG).show();
+        else
+            Toast.makeText(getActivity().getApplicationContext(),
+                    e.getMessage(),
+                    Toast.LENGTH_LONG).show();
+
     }
 
     private boolean isValidEmail(String email) {
@@ -177,5 +211,18 @@ public class SignUp extends Fragment {
                     .commit();
         }
     }
+
+    private boolean isOnline() {
+        ConnectivityManager cm = (ConnectivityManager)getActivity().getApplicationContext()
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
 
 }

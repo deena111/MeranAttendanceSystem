@@ -1,6 +1,9 @@
 package com.example.meranattendancesystem;
 
+import android.content.Context;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -194,6 +197,18 @@ public class EmployeesAttendance extends Fragment{
         resultS = resultS + Double.toString(min).substring(1);
         return Float.parseFloat(resultS);
     }
+
+    private boolean isOnline() {
+        ConnectivityManager cm = (ConnectivityManager)getActivity().getApplicationContext()
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 
 
 }

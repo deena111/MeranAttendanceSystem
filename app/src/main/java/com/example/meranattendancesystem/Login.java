@@ -1,6 +1,9 @@
 package com.example.meranattendancesystem;
 
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -15,9 +18,12 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.auth.SignInMethodQueryResult;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -36,10 +42,17 @@ public class Login extends Fragment {
     private DatabaseReference ref;
     private String Admin;
 
+    private boolean EmailNotExist;
+
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        //Check Internet Connection
+        if(!isOnline())
+            Toast.makeText(getActivity().getApplicationContext(), "يرجى الاتصال بالانترنت",
+                    Toast.LENGTH_SHORT).show();
+
         View v = inflater.inflate(R.layout.login, null);
 
         l_email = (EditText) v.findViewById(R.id.l_emailtxt);
@@ -107,10 +120,38 @@ public class Login extends Fragment {
                             });
                         }
                         else{
-                            Toast.makeText(getActivity().getApplicationContext(), "فشل تسجيل الدخول ",Toast.LENGTH_LONG).show();
+                            try{
+                                throw task.getException();
+                            }catch (FirebaseAuthUserCollisionException e){
+                                l_email.setError("البريد الالكتروني مسجل مسبقا");
+                                l_email.requestFocus();
+                            }catch (Exception e) {
+                                CheckReason(e, Email, Pass);
+                            }
                         }
                     }
                 });
+    }
+
+
+    private void CheckReason(Exception e, String email, String password) {
+        checkEmailExistsOrNot(email);
+        if(EmailNotExist) {
+            l_email.setError("البريد الالكتروني غير مسجل");
+            l_email.requestFocus();
+        } else if (!isOnline())
+            Toast.makeText(getActivity().getApplicationContext(),
+                    "يرجى الاتصال بالانترنت",
+                    Toast.LENGTH_LONG).show();
+        else if (e.getMessage().equalsIgnoreCase("The password is invalid or the user does not have a password.")) {
+            l_pass.setError("كلمة المرور غير صحيحة");
+            l_pass.requestFocus();
+        }else
+            Toast.makeText(getActivity().getApplicationContext(),
+                     "فشل التسجيل: " + e.getMessage(),
+                    Toast.LENGTH_LONG).show();
+
+
     }
 
     private boolean isValidEmail(String email) {
@@ -139,5 +180,33 @@ public class Login extends Fragment {
                     .commit();
         }
     }
+
+    private void checkEmailExistsOrNot(String Email){
+        auth.fetchSignInMethodsForEmail(Email).addOnCompleteListener(new OnCompleteListener<SignInMethodQueryResult>() {
+            @Override
+            public void onComplete(@NonNull Task<SignInMethodQueryResult> task) {
+                if (task.getResult().getSignInMethods().size() == 0){
+                    EmailNotExist = true;
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private boolean isOnline() {
+        ConnectivityManager cm = (ConnectivityManager)getActivity().getApplicationContext()
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 
 }
