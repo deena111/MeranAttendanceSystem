@@ -28,8 +28,11 @@ import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -44,6 +47,7 @@ public class AttendanceScanner extends Fragment {
     private RadioButton outbtn;
     private RadioGroup radiog;
     private DatabaseReference ref;
+    private DatabaseReference KeyRef;
     private FirebaseAuth currentuser;
     private String year;
     private String month;
@@ -67,6 +71,8 @@ public class AttendanceScanner extends Fragment {
         ref = FirebaseDatabase.getInstance().getReference()
                 .child("Employees").child(currentuser.getCurrentUser().getUid()).child("Attendance")
                 .child(year).child(month).child(day);
+        KeyRef = FirebaseDatabase.getInstance().getReference()
+                .child("QRcodeKey");
 
 
         //Set SurfaceView invisible at the beginning & Radiobuttons
@@ -140,18 +146,16 @@ public class AttendanceScanner extends Fragment {
                             Vibrator vibrator = (Vibrator) (getActivity().getApplicationContext())
                                     .getSystemService(Context.VIBRATOR_SERVICE);
                             vibrator.vibrate(100);
-                            if (inbtn.isChecked()){
-                                ref.child("In").setValue(time);
-                                Toast.makeText(getActivity().getApplicationContext(),
-                                        "تم التحضير بنجاح",
-                                        Toast.LENGTH_LONG).show();
-                            }
-                            else if (outbtn.isChecked()){
-                                ref.child("Out").setValue(time);
-                                Toast.makeText(getActivity().getApplicationContext(),
-                                        "تم التحضير بنجاح",
-                                        Toast.LENGTH_LONG).show();
-                            }
+                            KeyRef.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    String key = dataSnapshot.getValue(String.class);
+                                    WriteToDB(key, qrCodes.valueAt(0).displayValue);
+                                }
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                }
+                            });
                         }
                     });
                 }
@@ -159,6 +163,25 @@ public class AttendanceScanner extends Fragment {
         });
 
         return v;
+    }
+
+    private void WriteToDB(String key, String scanResult) {
+        if (key.equals(scanResult)) {
+            if (inbtn.isChecked()) {
+                ref.child("In").setValue(time);
+                Toast.makeText(getActivity().getApplicationContext(),
+                        "تم التحضير بنجاح",
+                        Toast.LENGTH_LONG).show();
+            } else if (outbtn.isChecked()) {
+                ref.child("Out").setValue(time);
+                Toast.makeText(getActivity().getApplicationContext(),
+                        "تم التحضير بنجاح",
+                        Toast.LENGTH_LONG).show();
+            }
+        }else
+            Toast.makeText(getActivity().getApplicationContext(),
+                    "الرمز غير صحيح!",
+                    Toast.LENGTH_LONG).show();
     }
 
     private void setDate() {

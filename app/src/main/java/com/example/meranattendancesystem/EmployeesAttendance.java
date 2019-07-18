@@ -91,11 +91,6 @@ public class EmployeesAttendance extends Fragment{
 
         YAxis yAxisR = EmpChart.getAxisRight();
         yAxisR.setDrawLabels(false);
-
-
-        YAxis yAxisL = EmpChart.getAxisLeft();
-
-
     }
 
     //Return list of UIDs
